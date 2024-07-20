@@ -5,12 +5,12 @@ const postgresUser = process.env.POSTGRES_USER;
 const postgresPassword = process.env.POSTGRES_PASSWORD;
 const postgresHost = process.env.POSTGRES_HOST;
 
-async function handleConnectToDB() {
-  const sequelize = new Sequelize(postgresDB, postgresUser, postgresPassword, {
-    host: postgresHost,
-    dialect: "postgres",
-  });
+const sequelize = new Sequelize(postgresDB, postgresUser, postgresPassword, {
+  host: postgresHost,
+  dialect: "postgres",
+});
 
+async function handleConnectToDB() {
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
@@ -19,4 +19,4 @@ async function handleConnectToDB() {
   }
 }
 
-module.exports = { handleConnectToDB };
+module.exports = { handleConnectToDB, sequelize };

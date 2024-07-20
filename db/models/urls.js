@@ -1,7 +1,7 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const sequelize = new Sequelize("sqlite::memory:");
+const { DataTypes } = require("sequelize");
+const { sequelize } = require("../connect");
 
-const Urls = sequelize.define("Urls", {
+const Urls = sequelize.define("urls", {
   originalUrl: {
     type: DataTypes.STRING,
     unique: true,
