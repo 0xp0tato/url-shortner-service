@@ -4,10 +4,12 @@ const postgresDB = process.env.POSTGRES_DB;
 const postgresUser = process.env.POSTGRES_USER;
 const postgresPassword = process.env.POSTGRES_PASSWORD;
 const postgresHost = process.env.POSTGRES_HOST;
+const postgresPort = process.env.POSTGRES_PORT;
 
 const sequelize = new Sequelize(postgresDB, postgresUser, postgresPassword, {
   host: postgresHost,
   dialect: "postgres",
+  port: postgresPort,
 });
 
 async function handleConnectToDB() {
