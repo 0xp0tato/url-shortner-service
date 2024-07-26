@@ -6,6 +6,13 @@ const {
   handleCheckIfUrlExists,
   handleCheckIfShortUrlExists,
 } = require("./db/services/handleGenerateShortUrl");
+
+const promClient = require("prom-client"); //Prometheus for Metric Collection
+
+const collectDefaultMetrics = promClient.collectDefaultMetrics;
+
+collectDefaultMetrics({ register: promClient.register });
+
 const app = express();
 app.use(express.json());
 
@@ -14,7 +21,12 @@ const port = process.env.SERVER_PORT;
 handleConnectToDB();
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  return res.send("Hello World!");
+});
+
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", promClient.register.contentType);
+  return res.send(await promClient.register.metrics());
 });
 
 app.post("/", async (req, res) => {
