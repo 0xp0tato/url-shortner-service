@@ -24,14 +24,9 @@ services:
     ports:
       - $SERVER_PORT:$SERVER_PORT
     container_name: url-shortner-service
-    environment:
-      - DB_HOST=$POSTGRES_HOST
-      - DB_USER=$POSTGRES_USER
-      - DB_PASSWORD=$POSTGRES_PASSWORD
-      - DB_NAME=$POSTGRES_DB
-      - DB_PORT=$POSTGRES_PORT
-    stdin_open: true
-    tty: true
+    depends_on:
+      postgresdb:
+        condition: service_healthy
   prom-server:
     image: prom/prometheus
     container_name: prometheus
@@ -46,9 +41,6 @@ services:
       - "3000:3000"
     volumes:
       - ./grafana-data:/var/lib/grafana
-    depends_on:
-      postgresdb:
-        condition: service_healthy
 
 volumes:
   db:
