@@ -17,6 +17,7 @@ const app = express();
 app.use(express.json());
 
 const port = process.env.SERVER_PORT;
+const host = process.env.SERVER_HOST;
 
 handleConnectToDB();
 
@@ -35,19 +36,24 @@ app.post("/", async (req, res) => {
 
   try {
     const existedUrl = await handleCheckIfUrlExists(url);
-    if (existedUrl)
+    let shortUrl;
+    if (existedUrl) {
+      shortUrl = `${host}/${existedUrl.shortUrl}`;
       return res.status(200).send({
         message: "Short Url already existed",
-        shortUrl: existedUrl.shortUrl,
+        shortUrl: shortUrl,
       });
+    }
 
     const generatedUrl = await handleGenerateShortUrl(url);
 
-    if (generatedUrl)
+    if (generatedUrl) {
+      shortUrl = `${host}/${generatedUrl.shortUrl}`;
       return res.status(201).send({
         message: "Short Url created successfully",
-        shortUrl: generatedUrl.shortUrl,
+        shortUrl: shortUrl,
       });
+    }
   } catch (error) {
     console.log(error);
     return res.status(400).send({
