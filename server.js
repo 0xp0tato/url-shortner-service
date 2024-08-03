@@ -7,6 +7,7 @@ const {
   handleCheckIfShortUrlExists,
 } = require("./db/services/handleGenerateShortUrl");
 const path = require("path");
+const cors = require("cors");
 
 const promClient = require("prom-client"); //Prometheus for Metric Collection
 
@@ -16,6 +17,7 @@ collectDefaultMetrics({ register: promClient.register });
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 
 const port = process.env.SERVER_PORT;
