@@ -6,6 +6,7 @@ const {
   handleCheckIfUrlExists,
   handleCheckIfShortUrlExists,
 } = require("./db/services/handleGenerateShortUrl");
+const path = require("path");
 
 const promClient = require("prom-client"); //Prometheus for Metric Collection
 
@@ -15,6 +16,7 @@ collectDefaultMetrics({ register: promClient.register });
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
 const port = process.env.SERVER_PORT;
 const host = process.env.SERVER_HOST;
@@ -22,7 +24,7 @@ const host = process.env.SERVER_HOST;
 handleConnectToDB();
 
 app.get("/", (req, res) => {
-  return res.send("Hello World!");
+  return res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.get("/metrics", async (req, res) => {
@@ -32,7 +34,12 @@ app.get("/metrics", async (req, res) => {
 
 app.post("/", async (req, res) => {
   const { url } = req.body;
-  if (!url) res.send(400, "No Url Provided");
+  if (!url) res.send(400, { message: "No Url Provided" });
+
+  const urlRegex =
+    /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/g;
+
+  if (!urlRegex.test(url)) return res.send(400, { message: "Invalid Url" });
 
   try {
     const existedUrl = await handleCheckIfUrlExists(url);

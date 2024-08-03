@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>This is a URL Shortner created using NodeJS, Postgres and Docker.</h1>
+    <span>
+      <h2>Try it now:</h2>
+      <input type="text" id="urlInput" placeholder="Enter URL here" />
+      <button onclick="submitURL()">Submit</button>
+    </span>
+    <div id="responseMessage"></div>
+  </body>
+</html>
+
+<script>
+  async function submitURL() {
+    const url = document.getElementById("urlInput").value;
+    const responseMessage = document.getElementById("responseMessage");
+    responseMessage.innerHTML = ""; // Clear any previous messages
+
+    try {
+      const response = await fetch("http://localhost:8000", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: url }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.ok) {
+        responseMessage.innerHTML = `${data.message} : <a href="${data.shortUrl}">${data.shortUrl}</a>`;
+      } else {
+        responseMessage.innerHTML =
+          data.message || "Failed to generate short url";
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      responseMessage.innerHTML = "An error occurred";
+    }
+  }
+</script>
