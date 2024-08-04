@@ -75,7 +75,18 @@ app.get("/:shortUrl", async (req, res) => {
   const { shortUrl } = req.params;
   try {
     const existedUrl = await handleCheckIfShortUrlExists(shortUrl);
-    if (existedUrl) return res.redirect(existedUrl.originalUrl);
+    if (existedUrl && existedUrl.originalUrl) {
+      const redirectUrl =
+        existedUrl.originalUrl.startsWith("http://") ||
+        existedUrl.originalUrl.startsWith("https://")
+          ? existedUrl.originalUrl
+          : `http://${existedUrl.originalUrl}`;
+      return res.redirect(redirectUrl);
+    } else {
+      return res
+        .status(400)
+        .send({ message: "Url of such type does not exist" });
+    }
   } catch (error) {
     console.log(error);
     return res.status(400).send({
